@@ -2,22 +2,34 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/topLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:keepScreenOn="true">
+    android:keepScreenOn="true"
+    android:background="@color/colorPrimaryDark">
 
     <com.android.facefilter.camera.CameraSourcePreview
         android:id="@+id/preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="385dp"
+        android:layout_height="449dp"
+        android:weightSum="1"
+        tools:layout_editor_absoluteY="2dp"
+        tools:layout_editor_absoluteX="0dp">
 
         <com.android.facefilter.camera.GraphicOverlay
             android:id="@+id/faceOverlay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </com.android.facefilter.camera.CameraSourcePreview>
-
+    <fragment android:name="com.android.facefilter.MainActivity"
+        android:id="@+id/article_fragment"
+        android:layout_weight="0.20"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        tools:layout="@layout/activity_main"
+        android:layout_alignParentEnd="true"
+        tools:layout_editor_absoluteY="475dp"/>
 </LinearLayout>

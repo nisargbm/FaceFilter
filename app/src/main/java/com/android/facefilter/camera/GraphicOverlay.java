@@ -46,7 +46,7 @@ import java.util.Set;
 public class GraphicOverlay extends View {
     private final Object mLock = new Object();
     private int mPreviewWidth;
-    private float mWidthScaleFactor = 1.0f;
+    private float mWidthScaleFactor = 2.0f;
     private int mPreviewHeight;
     private float mHeightScaleFactor = 1.0f;
     private int mFacing = CameraSource.CAMERA_FACING_BACK;

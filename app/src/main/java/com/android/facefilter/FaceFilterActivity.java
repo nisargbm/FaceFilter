@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.android.facefilter.camera.CameraSourcePreview;
 import com.android.facefilter.camera.GraphicOverlay;
@@ -33,10 +35,12 @@ public class FaceFilterActivity extends AppCompatActivity {
 
     private CameraSourcePreview mPreview;
     private GraphicOverlay mGraphicOverlay;
-
+    public static int imageid = R.drawable.glasses;
+    public static int tempImageId=imageid;
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
+    private MainActivity mFragment;
 
     //==============================================================================================
     // Activity Methods
@@ -45,6 +49,7 @@ public class FaceFilterActivity extends AppCompatActivity {
     /**
      * Initializes the UI and initiates the creation of a face detector.
      */
+    private static final int CONTENT_VIEW_ID = 10101010;
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -126,7 +131,7 @@ public class FaceFilterActivity extends AppCompatActivity {
         }
 
         mCameraSource = new CameraSource.Builder(context, detector)
-                .setRequestedPreviewSize(640, 480)
+                .setRequestedPreviewSize(480,480/*640, 480*/)
                 .setFacing(CameraSource.CAMERA_FACING_FRONT)
                 .setRequestedFps(30.0f)
                 .build();
@@ -232,6 +237,7 @@ public class FaceFilterActivity extends AppCompatActivity {
 
         if (mCameraSource != null) {
             try {
+                tempImageId = imageid;
                 mPreview.start(mCameraSource, mGraphicOverlay);
             } catch (IOException e) {
                 Log.e(TAG, "Unable to start camera source.", e);
@@ -275,6 +281,7 @@ public class FaceFilterActivity extends AppCompatActivity {
         @Override
         public void onNewItem(int faceId, Face item) {
             mFaceGraphic.setId(faceId);
+           // System.out.println(imageid + " " + tempImageId);
         }
 
         /**
