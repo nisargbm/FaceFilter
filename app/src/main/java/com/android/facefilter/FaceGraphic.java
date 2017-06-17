@@ -23,6 +23,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Bundle;
 
 import com.android.facefilter.camera.GraphicOverlay;
@@ -96,7 +97,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         bitmap_beard = BitmapFactory.decodeResource(getOverlay().getContext().getResources(), R.drawable.beard);
         bitmap_beard1 = BitmapFactory.decodeResource(getOverlay().getContext().getResources(), R.drawable.beard_one);
         bitmap_gokuhair = BitmapFactory.decodeResource(getOverlay().getContext().getResources(), R.drawable.goku_hair);
-        bitmap_bluegoggles = BitmapFactory.decodeResource(getOverlay().getContext().getResources(), R.drawable.blue_goggles);
+        bitmap_bluegoggles = BitmapFactory.decodeResource(getOverlay().getContext().getResources(), R.drawable.goggles);
         bitmap_gokuhair2 = BitmapFactory.decodeResource(getOverlay().getContext().getResources(), R.drawable.goku);
         bitmap_hairblonde = BitmapFactory.decodeResource(getOverlay().getContext().getResources(), R.drawable.hair_blonde);
         bitmap_longhair = BitmapFactory.decodeResource(getOverlay().getContext().getResources(), R.drawable.long_hair);
@@ -129,13 +130,11 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         if(FaceFilterActivity.imageid !=FaceFilterActivity.tempImageId)FaceFilterActivity.tempImageId = FaceFilterActivity.imageid;
         switch(FaceFilterActivity.tempImageId){
             case (R.drawable.hair):{
-                System.out.println(FaceFilterActivity.tempImageId);
                 op_head = Bitmap.createScaledBitmap(bitmap_head, (int) scaleX(face.getWidth()),
                         (int) scaleY(((bitmap_head.getHeight() * face.getWidth()) / bitmap_head.getWidth())), false);
                 break;
             }
             case (R.drawable.glasses):{
-                System.out.println(FaceFilterActivity.tempImageId);
                 op_glasses =  Bitmap.createScaledBitmap(bitmap_glasses, (int) scaleX(face.getWidth()),
                         (int) scaleY(((bitmap_glasses.getHeight() * face.getWidth()) / bitmap_glasses.getWidth())), false);
                 break;
@@ -203,6 +202,12 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         if (face == null) {
             return;
         }
+//        List<Landmark> landmarks = face.getLandmarks();
+//        for(Landmark l: landmarks){
+//            int cx = (int) (translateX(l.getPosition().x ));
+//            int cy = (int) (translateY(l.getPosition().y ));
+//            canvas.drawCircle(cx,cy,10,mFacePositionPaint);
+//        }
         //if(FaceFilterActivity.imageid !=FaceFilterActivity.tempImageId)FaceFilterActivity.tempImageId = FaceFilterActivity.imageid;
         switch(FaceFilterActivity.tempImageId){
             case (R.drawable.hair):{
@@ -210,7 +215,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
                 break;
             }
             case (R.drawable.glasses):{
-                drawGlasses(canvas,face);
+                drawBlack(canvas,face);
                 break;
             }
             case (R.drawable.cap):{
@@ -253,8 +258,9 @@ class FaceGraphic extends GraphicOverlay.Graphic {
                 drawBeard3(canvas,face);
                 break;
             }
-        }
+          }
     }
+
 
     private void drawMoustacheGlasses(Canvas canvas, Face face) {
         List<Landmark> landmarks = face.getLandmarks();
@@ -267,7 +273,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
                 bottommouthY = cy;
             }
         }
-        if((bottommouthX!=0 && bottommouthY!=0)) {;
+        if((bottommouthX!=0 && bottommouthY!=0)) {
             canvas.drawCircle(bottommouthX,bottommouthY,10,mFacePositionPaint);
             float xOffset = scaleX(face.getWidth() / 2f);
             float yOffset = scaleY(face.getHeight() / 2f);
@@ -275,9 +281,10 @@ class FaceGraphic extends GraphicOverlay.Graphic {
             float top = bottommouthY - yOffset;
             float right = bottommouthX + xOffset;
             float bottom = bottommouthY + yOffset;
-            Rect rect = new Rect((int)left,(int)top,(int)right,(int)bottom);
-            canvas.drawRect(rect,mBoxPaint);
-            canvas.drawBitmap(op_moustache_glasses,null,rect,new Paint());
+            RectF rect = new RectF(left,top,right,bottom);
+            rotatePlusDraw(canvas,face,rect,op_moustache_glasses,bottommouthX,bottommouthY);
+           // canvas.drawRect(rect,mBoxPaint);
+            //canvas.drawBitmap(op_moustache_glasses,null,rect,new Paint());
 
         }
     }
@@ -290,9 +297,10 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         float top = y - yOffset;
         float right = x + xOffset;
         float bottom = y + yOffset;
-        canvas.drawRect(left,top,right,bottom,mBoxPaint);
-        Rect rect = new Rect((int)left,(int)top,(int)right,(int)bottom);
-        canvas.drawBitmap(op_head, null, rect, new Paint());
+        //canvas.drawRect(left,top,right,bottom,mBoxPaint);
+        RectF rect = new RectF(left,top,right,bottom);
+        rotatePlusDraw(canvas,face,rect,op_head,x,y);
+        //canvas.drawBitmap(op_head, null, rect, new Paint());
     }
     private void drawLonghair(Canvas canvas, Face face) {
         float x = translateX(face.getPosition().x + face.getWidth() / 2f);
@@ -303,9 +311,10 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         float top = y - yOffset;
         float right = x + xOffset;
         float bottom = y + 2*yOffset;
-        canvas.drawRect(left,top,right,bottom,mBoxPaint);
-        Rect rect = new Rect((int)left,(int)top,(int)right,(int)bottom);
-        canvas.drawBitmap(op_longhair, null, rect, new Paint());
+        //canvas.drawRect(left,top,right,bottom,mBoxPaint);
+        RectF rect = new RectF(left,top,right,bottom);
+        rotatePlusDraw(canvas,face,rect,op_longhair,x,y);
+        //canvas.drawBitmap(op_longhair, null, rect, new Paint());
     }
     private void drawhairBlonde(Canvas canvas, Face face) {
         float x = translateX(face.getPosition().x + face.getWidth() / 2f);
@@ -316,9 +325,10 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         float top = y - yOffset;
         float right = x + xOffset;
         float bottom = y + yOffset;
-        canvas.drawRect(left,top,right,bottom,mBoxPaint);
-        Rect rect = new Rect((int)left,(int)top,(int)right,(int)bottom);
-        canvas.drawBitmap(op_hairblonde, null, rect, new Paint());
+        //canvas.drawRect(left,top,right,bottom,mBoxPaint);
+        RectF rect = new RectF(left,top,right,bottom);
+        rotatePlusDraw(canvas,face,rect,op_hairblonde,x,y);
+        //canvas.drawBitmap(op_hairblonde, null, rect, new Paint());
     }
     private void drawBeard(Canvas canvas,Face face){
         List<Landmark> landmarks = face.getLandmarks();
@@ -345,9 +355,10 @@ class FaceGraphic extends GraphicOverlay.Graphic {
             float top = bottommouthY - yOffset;
             float right = bottommouthX + xOffset;
             float bottom = bottommouthY + yOffset;
-            Rect rect = new Rect((int)left,(int)top,(int)right,(int)bottom);
+            RectF rect = new RectF(left,top,right,bottom);
+            rotatePlusDraw(canvas,face,rect,op_beard,bottommouthX,bottommouthY);
             //canvas.drawRect(rect,mBoxPaint);
-            canvas.drawBitmap(op_beard,null,rect,new Paint());
+            //canvas.drawBitmap(op_beard,null,rect,new Paint());
 
         }
     }
@@ -377,9 +388,10 @@ class FaceGraphic extends GraphicOverlay.Graphic {
             float top = bottommouthY - yOffset;
             float right = bottommouthX + xOffset;
             float bottom = bottommouthY + yOffset;
-            Rect rect = new Rect((int) left, (int) top, (int) right, (int) bottom);
+            RectF rect = new RectF(left,top,right,bottom);
+            rotatePlusDraw(canvas,face,rect,op_beard1,bottommouthX,bottommouthY);
             //canvas.drawRect(rect,mBoxPaint);
-            canvas.drawBitmap(op_beard1, null, rect, new Paint());
+            //canvas.drawBitmap(op_beard1, null, rect, new Paint());
         }
     }
     private void drawBeard3(Canvas canvas, Face face) {
@@ -408,9 +420,10 @@ class FaceGraphic extends GraphicOverlay.Graphic {
             float top = bottommouthY - yOffset;
             float right = bottommouthX + xOffset;
             float bottom = bottommouthY + yOffset;
-            Rect rect = new Rect((int) left, (int) top, (int) right, (int) bottom);
+            RectF rect = new RectF(left,top,right,bottom);
+            rotatePlusDraw(canvas,face,rect,op_beard3,bottommouthX,bottommouthY);
             //canvas.drawRect(rect,mBoxPaint);
-            canvas.drawBitmap(op_beard3, null, rect, new Paint());
+            //canvas.drawBitmap(op_beard3, null, rect, new Paint());
         }
     }
     private void drawGoku(Canvas canvas,Face face){
@@ -423,8 +436,9 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         float right = x + xOffset;
         float bottom = y + yOffset;
         canvas.drawRect(left,top,right,bottom,mBoxPaint);
-        Rect rect = new Rect((int)left,(int)top,(int)right,(int)bottom);
-        canvas.drawBitmap(op_gokuhair,null, rect, new Paint());
+        RectF rect = new RectF(left,top,right,bottom);
+        rotatePlusDraw(canvas,face,rect,op_gokuhair,x,y);
+       // canvas.drawBitmap(op_gokuhair,null, rect, new Paint());
     }
     private void drawGoku1(Canvas canvas, Face face) {
         float x = translateX(face.getPosition().x + face.getWidth() / 2f);
@@ -436,27 +450,69 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         float right = x + xOffset;
         float bottom = y + yOffset;
         canvas.drawRect(left,top,right,bottom,mBoxPaint);
-        Rect rect = new Rect((int)left,(int)top,(int)right,(int)bottom);
-        canvas.drawBitmap(op_gokuhair2,null, rect, new Paint());
+        RectF rect = new RectF(left,top,right,bottom);
+        rotatePlusDraw(canvas,face,rect,op_gokuhair2,x,y);
+        //canvas.drawBitmap(op_gokuhair2,null, rect, new Paint());
     }
     private void drawCrown(Canvas canvas ,Face face){
-        float x = translateX(face.getPosition().x + face.getWidth() / 2);
-        float y =translateY(face.getPosition().y + face.getHeight() / 5f );
-        // canvas.drawCircle(x, y, FACE_POSITION_RADIUS, mFacePositionPaint);
-        float xOffset = scaleX(face.getWidth() / 2f);
-        float yOffset = scaleY(face.getHeight() / 2.3f);
-        //float xOffset = scaleX(face.getWidth()/2.1f);
-        //float yOffset = scaleY(face.getHeight() / 2.0f);
-        // canvas.drawText("id: " + mFaceId, x + ID_X_OFFSET, y + ID_Y_OFFSET, mIdPaint);
-        float left = x - xOffset;
-        float top = y - yOffset;
-        float right = x + xOffset;
-        float bottom = y + yOffset;
-        //canvas.drawRect(left,top,right,bottom,mBoxPaint);
-        Rect rect = new Rect((int)left,(int)top,(int)right,(int)bottom);
-        canvas.drawBitmap(op_cap, null, rect, new Paint());
+        List<Landmark> landmarks = face.getLandmarks();
+        int lefteyeposX=0,lefteyeposY=0,righteyeposX=0,righteyeposY=0,noseX=0,noseY=0;
+        for(Landmark l: landmarks){
+            int cx = (int) (translateX(l.getPosition().x ));
+            int cy = (int) (translateY(l.getPosition().y ));
+            //drawOnImageView(canvas,l.getType(),cx,cy);
+            if(l.getType() == Landmark.LEFT_EYE ){
+                lefteyeposX = cx;
+                lefteyeposY = cy;
+            }
+            else if(l.getType() == Landmark.RIGHT_EYE) {
+                righteyeposX = cx;
+                righteyeposY = cy;
+            }
+            else if(l.getType() == Landmark.NOSE_BASE){
+                noseX = cx;
+                noseY = cy;
+            }
+        }
+        if(lefteyeposX!=0 && lefteyeposY!=0 && righteyeposX!=0 && righteyeposY!=0 && noseX!=0 && noseY!=0) {
+            float midx = (lefteyeposX+righteyeposX)/2;
+            float midy = (lefteyeposY+righteyeposY)/2;
+            float foreheadX = 2*midx - 1.1f*noseX;
+            float foreheadY = 2*midy - 1.1f*noseY;
+            float xOffset = scaleX(face.getWidth() / 2f);
+            float yOffset = scaleY(face.getHeight() / 2.3f);
+            //float xOffset = scaleX(face.getWidth()/2.1f);
+            //float yOffset = scaleY(face.getHeight() / 2.0f);
+            // canvas.drawText("id: " + mFaceId, x + ID_X_OFFSET, y + ID_Y_OFFSET, mIdPaint);
+            float left = foreheadX - xOffset;
+            float top = foreheadY - yOffset;
+            float right = foreheadX + xOffset;
+            float bottom = foreheadY + yOffset;
+            //canvas.drawRect(left,top,right,bottom,mBoxPaint);
+            RectF rect = new RectF(left,top,right,bottom);
+            rotatePlusDraw(canvas,face,rect,op_cap,foreheadX,foreheadY);
+        }
+//        float x = translateX(face.getPosition().x + face.getWidth() / 2);
+//        float y =translateY(face.getPosition().y + face.getHeight() / 5f );
+//        float x = translateX(face.getPosition().x + face.getWidth() / 2);
+//        float y =translateY(face.getPosition().y + face.getHeight() / 2f );
+//         canvas.drawCircle(x, y, FACE_POSITION_RADIUS, mFacePositionPaint);
+//        float xOffset = scaleX(face.getWidth() / 2f);
+//        float yOffset = scaleY(face.getHeight() / 2.3f);
+//        //float xOffset = scaleX(face.getWidth()/2.1f);
+//        //float yOffset = scaleY(face.getHeight() / 2.0f);
+//        // canvas.drawText("id: " + mFaceId, x + ID_X_OFFSET, y + ID_Y_OFFSET, mIdPaint);
+//        float left = x - xOffset;
+//        float top = y - yOffset;
+//        float right = x + xOffset;
+//        float bottom = y + yOffset;
+//        //canvas.drawRect(left,top,right,bottom,mBoxPaint);
+//        RectF rect = new RectF(left,top,right,bottom);
+//        rotatePlusDraw(canvas,face,rect,op_cap,x,y);
+       // canvas.drawBitmap(op_cap, null, rect, new Paint());
     }
     private void drawGlasses(Canvas canvas,Face face){
+       // float slant = face.getEulerZ();
         List<Landmark> landmarks = face.getLandmarks();
         int lefteyeposX=0,lefteyeposY=0,righteyeposX=0,righteyeposY=0,mouthleftX=0,mouthleftY=0;
         for(Landmark l: landmarks){
@@ -478,16 +534,71 @@ class FaceGraphic extends GraphicOverlay.Graphic {
             //canvas.drawCircle(midx,midy,10,mFacePositionPaint);
             //canvas.drawCircle(lefteyeposX,lefteyeposY,10,mFacePositionPaint);
             //canvas.drawCircle(righteyeposX,righteyeposY,10,mFacePositionPaint);
-            float xOffset = scaleX(face.getWidth() / 2.3f);
-            float yOffset = scaleY(face.getHeight() / 5.3f);
+            float xOffset = scaleX(face.getWidth() / 2f);
+            float yOffset = scaleY(face.getHeight() / 5f);
             float left = midx - xOffset;
             float top = midy - yOffset;
             float right = midx + xOffset;
             float bottom = midy + yOffset;
-            double angle = ((float)lefteyeposY-(float)righteyeposY)/((float)lefteyeposX-(float)righteyeposX);
-            Rect rect = new Rect((int)left,(int)top,(int)right,(int)bottom);
-            canvas.drawBitmap(op_glasses,null ,rect , new Paint());
+            //double angle = ((float)lefteyeposY-(float)righteyeposY)/((float)lefteyeposX-(float)righteyeposX);
+            RectF rect = new RectF(left,top,right,bottom);
+           // canvas.drawBitmap(op_glasses,null ,rect , new Paint());
+            //System.out.println(face.getEulerZ());
+            canvas.drawLine(lefteyeposX,lefteyeposY,righteyeposX,righteyeposY,new Paint());
+            //canvas.drawBitmap(rotateBitmap(op_glasses,face.getEulerZ(),midx,midy,canvas),left,top,new Paint());
         }
+    }
+    private void drawBlack(Canvas canvas,Face face){
+        // float slant = face.getEulerZ();
+        List<Landmark> landmarks = face.getLandmarks();
+        int lefteyeposX=0,lefteyeposY=0,righteyeposX=0,righteyeposY=0,mouthleftX=0,mouthleftY=0;
+        for(Landmark l: landmarks){
+            int cx = (int) (translateX(l.getPosition().x ));
+            int cy = (int) (translateY(l.getPosition().y ));
+            //drawOnImageView(canvas,l.getType(),cx,cy);
+            if(l.getType() == Landmark.LEFT_EYE ){
+                lefteyeposX = cx;
+                lefteyeposY = cy;
+            }
+            else if(l.getType() == Landmark.RIGHT_EYE) {
+                righteyeposX = cx;
+                righteyeposY = cy;
+            }
+        }
+        if(lefteyeposX!=0 && lefteyeposY!=0 && righteyeposX!=0 && righteyeposY!=0) {
+            int midx = (lefteyeposX+righteyeposX)/2;
+            int midy = (lefteyeposY+righteyeposY)/2;
+            //canvas.drawCircle(midx,midy,10,mFacePositionPaint);
+            //canvas.drawCircle(lefteyeposX,lefteyeposY,10,mFacePositionPaint);
+            //canvas.drawCircle(righteyeposX,righteyeposY,10,mFacePositionPaint);
+            float xOffset = scaleX(face.getWidth() / 2f);
+            float yOffset = scaleY(face.getHeight() / 5f);
+            float left = midx - xOffset;
+            float top = midy - yOffset;
+            float right = midx + xOffset;
+            float bottom = midy + yOffset;
+            RectF rect = new RectF(left,top,right,bottom);
+            rotatePlusDraw(canvas,face,rect,op_glasses,midx,midy);
+        }
+    }
+    public Bitmap rotateBitmap(Bitmap original, float degrees,float cx,float cy,Canvas canvas,RectF rect) {
+        int width = original.getWidth();
+        int height = original.getHeight();
+
+        Matrix matrix = new Matrix();
+       // matrix.preRotate(degrees,cx,cy);
+        matrix.postRotate(degrees,cx,cy);
+        matrix.mapRect(rect);
+        canvas.drawRect(rect,mBoxPaint);
+//        canvas.drawLine(cx,cy,cx+width,cy-height,new Paint());
+//        canvas.drawLine(cx,cy+height,cx+width,cy,new Paint());
+//        canvas.drawLine(cx,cy,cx+width,cy-height,new Paint());
+//        canvas.drawLine(cx,cy,cx+width,cy-height,new Paint());
+        canvas.drawCircle(cx,cy,10,mFacePositionPaint);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(original, 0, 0, width, height, matrix, true);
+       // Canvas canvas = new Canvas(rotatedBitmap);
+       // canvas.drawBitmap(original, 5.0f, 0.0f, null);
+        return rotatedBitmap;
     }
     private void drawBlueGoggles(Canvas canvas, Face face) {
         List<Landmark> landmarks = face.getLandmarks();
@@ -516,9 +627,19 @@ class FaceGraphic extends GraphicOverlay.Graphic {
             float top = midy - yOffset;
             float right = midx + xOffset;
             float bottom = midy + yOffset;
-            Rect rect = new Rect((int)left,(int)top,(int)right,(int)bottom);
-            canvas.drawBitmap(op_bluegoggles,null ,rect , new Paint());
+            RectF rect = new RectF(left,top,right,bottom);
+            rotatePlusDraw(canvas,face,rect,op_bluegoggles,midx,midy);
         }
+    }
+    private void rotatePlusDraw(Canvas canvas,Face face,RectF rect,Bitmap bitmap,float x,float y){
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        Matrix matrix = new Matrix();
+        matrix.postRotate(face.getEulerZ(),x,y);
+        matrix.mapRect(rect);
+        canvas.drawRect(rect,mBoxPaint);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+        canvas.drawBitmap(rotatedBitmap,null,rect,new Paint());
     }
     public static Bitmap RotateBitmap(Bitmap source, float angle,int x,int y)
     {

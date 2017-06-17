@@ -85,7 +85,7 @@ public class MainActivity extends Fragment {
         data.add(new Data( R.drawable.beard, "Beard"));
         data.add(new Data( R.drawable.beard_one, "Beard 1"));
         data.add(new Data( R.drawable.goku_hair, "GokuHair"));
-        data.add(new Data( R.drawable.blue_goggles, "Goggles"));
+        data.add(new Data( R.drawable.goggles, "Goggles"));
         data.add(new Data( R.drawable.goku, "Gokuhair2"));
         data.add(new Data( R.drawable.hair_blonde, "Hair 2"));
         data.add(new Data( R.drawable.long_hair, "long Hair"));
